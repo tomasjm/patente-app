@@ -34,10 +34,9 @@ export default class Login extends React.Component {
     }
     API.post("auth/login", this.state)
       .then(response => {
-        console.log(response.data);
         if (response.data.response) {
           Alert.alert("Éxito!", "Has ingresado correctamente");
-          AsyncStorage.setItem("token", response.data.token).then(() => {
+          AsyncStorage.setItem("token", response.data.data.token).then(() => {
             this.props.navigation.navigate("AuthLoading");
           });
         } else {

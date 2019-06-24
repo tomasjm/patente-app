@@ -31,19 +31,36 @@ export default class AuthLoadingScreen extends React.Component {
   _bootstrapAsync = async () => {
     const userToken = await AsyncStorage.getItem("token");
     let session = false;
+    let typeUser = 0;
     if (userToken) {
       API.get("auth/check/" + userToken).then(async res => {
+        console.log("--------");
         if (res.data.response) {
-          console.log(res.data.user[0]);
-          await AsyncStorage.setItem("user", JSON.stringify(res.data.user[0]));
+          await AsyncStorage.setItem("user", JSON.stringify(res.data.data[0]));
           session = true;
+          if (
+            res.data.data[0].tipo_usuario_id == 1 ||
+            res.data.data[0].tipo_usuario_id == 2
+          ) {
+            typeUser = 1;
+          } else {
+            typeUser = 2;
+          }
         }
       });
     } else {
       await AsyncStorage.clear();
     }
     setTimeout(() => {
-      this.props.navigation.navigate(session ? "App" : "Auth");
+      if (session) {
+        if (typeUser == 1) {
+          this.props.navigation.navigate("App");
+        } else {
+          this.props.navigation.navigate("Consulta");
+        }
+      } else {
+        this.props.navigation.navigate("Auth");
+      }
     }, 1000);
   };
 
